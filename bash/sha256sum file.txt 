@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Generate checksums
+function calculate_checksum() {
+    local filePath=$1
+    sha256sum "$filePath"
+}
+
+# Compare two checksums
+function compare_checksums() {
+    local checksum1=$1
+    local checksum2=$2
+
+    if [[ "$checksum1" == "$checksum2" ]]
+    then
+        echo "✅ Checksums match — file is intact"
+    else
+        echo "❌ Checksums do not match — file integrity compromised"
+    fi
+}
+
+# Test it
+echo "Hello World" > testfile.txt
+checksum1=$(sha256sum testfile.txt | awk '{print $1}')
+echo "Checksum: $checksum1"
+
+# Now tamper with the file
+echo "Tampered!" >> testfile.txt
+checksum2=$(sha256sum testfile.txt | awk '{print $1}')
+echo "Checksum: $checksum2"
+
+# Compare
+compare_checksums "$checksum1" "$checksum2"
